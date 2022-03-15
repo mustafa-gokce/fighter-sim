@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="hasan_polatkan">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision_mcmillan">
+        <geometry>
+          <heightmap>
+            <uri>model://hasan_polatkan/media/hasan_polatkan.tif</uri>
+            <pos>-200 -100 -785</pos>
+          </heightmap>
+        </geometry>
+      </collision>
+      <visual name="visual_mcmillan">
+        <geometry>
+          <heightmap>
+            <texture>
+              <box><size>1000 1000 0.5</size></box>
+              <diffuse>model://hasan_polatkan/media/textures/hasan_polatkan.png</diffuse>
+              <normal>file://media/materials/textures/flat_normal.png</normal>
+              <size>8193</size>
+            </texture>
+            <uri>model://hasan_polatkan/media/hasan_polatkan.tif</uri>
+            <pos>-200 -100 -800</pos>
+          </heightmap>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
