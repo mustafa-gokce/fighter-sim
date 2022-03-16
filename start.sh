@@ -1,5 +1,5 @@
 #!/bin/bash
-
+clear
 BLUE="\e[36m"
 GREEN="\e[32m"
 ENDCOLOR="\e[0m"
@@ -254,6 +254,9 @@ do
             ;;
     esac
 done
+
 screen -S server -d -m bash -c "rosrun web_video_server web_video_server"
 screen -S simulation -T -d -m bash -c "roslaunch ~/test-ucusu/fighter-sim/worlds/launcher.launch world:=$map-$map2.world"
 killall screen
+pkill -9 -f mavproxy.py
+pkill -9 -f arduplane
