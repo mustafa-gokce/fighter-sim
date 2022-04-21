@@ -45,11 +45,11 @@ mkdir json
 while [ $sayac -le 11 ]
 do
 sayac=$((sayac+1))
-echo "{
+echo '{
    "long": 0,
    "lat": 0,
    "alt": 0
-}" > ./json/$((udp=udp+10)).json
+}' > ./json/$((udp=udp+10)).json
 done
 
 ((udp=udp-120))
