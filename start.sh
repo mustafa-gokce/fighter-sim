@@ -6,6 +6,8 @@ ENDCOLOR="\e[0m"
 RED="\e[91m"
 YELLOW="\e[93m"
 
+c=-1 
+
 udp=("14700-5")
 if [ 0$1 -gt "0" ] ;
 then
@@ -38,6 +40,20 @@ echo -e "$udp_port_list"
 
 ((udp=udp-110))
 
+sayac=0
+mkdir json
+while [ $sayac -le 11 ]
+do
+sayac=$((sayac+1))
+echo "{
+   "long": 0,
+   "lat": 0,
+   "alt": 0
+}" > ./json/$((udp=udp+10)).json
+done
+
+((udp=udp-120))
+
 samsun_carsamba=("${GREEN}
 Fighter UAV Competition coordinates: ${BLUE}
 latmin=41.2714445
@@ -51,6 +67,7 @@ Fighter UAV QR coordinates:${BLUE}
 41.27303270 36.54732937   istikbal_goklerdedir_q
 41.27344964 36.54494403   teknofest_h${ENDCOLOR}
 ")
+
 hasan_polatkan=("${GREEN}
 Fighter UAV Competition coordinates:${BLUE}
 latmin=39.8265502
@@ -64,6 +81,7 @@ Fighter UAV QR coordinates:${BLUE}
 39.82786821 30.49895444   istikbal_goklerdedir_q
 39.82828815 30.49662495   teknofest_h${ENDCOLOR}
 ")
+
 istanbul_airport=("${GREEN}
 Fighter UAV Competition coordinates:${BLUE}
 latmin=41.2823619
@@ -77,6 +95,7 @@ Fighter UAV QR coordinates:${BLUE}
 41.28342268 28.71732269  istikbal_goklerdedir_q
 41.28384374 28.71493156  teknofest_h${ENDCOLOR}
 ")
+
 mcmillan_airport=("${GREEN}
 Fighter UAV Competition coordinates:${BLUE}
 latmin=35.7218833
@@ -90,7 +109,7 @@ Fighter UAV QR coordinates:${BLUE}
 35.72337693 -120.77278143  istikbal_goklerdedir_q
 35.72341750 -120.77420400  teknofest_h${ENDCOLOR}
 ")
-export PS3="\e[0;36m[\u@\h \W]\$ \e[m "
+
 PS3='Choose your map option: '
 opt=("Standart Map Only Location" "Real Map with Location")
 select opt in "${opt[@]}"
@@ -168,9 +187,6 @@ do
     esac
 done
 
-
-c=-1
-
 PS3='Map Type: '
 opt2=("Empty" "Vehicle" "Vehicle with Enemies" "Vehicle with Frozen Enemies")
 select opt in "${opt2[@]}"
@@ -188,15 +204,15 @@ do
             do
                 case $opt in
                 "Yes")
-                    screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+                    screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessnaMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
                     screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -b 1 -p $udp"
-                    screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+                    screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyrMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
                     screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -b 1 -p $udp"
                     break
                     ;; 
                 "No")
-                   screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-                   screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+                   screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessnaMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+                   screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyrMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
                     break
                     ;;
                 esac
@@ -205,10 +221,10 @@ do
                     ;;
         "Vehicle with Enemies")
             map2=vehicles
-            screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-            #screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp"
-            screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-            #screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp"
+            screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessnaMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+            gnome-terminal -- python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp
+            screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyrMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+            gnome-terminal -- python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp
             screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
             screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp"
             screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
@@ -237,15 +253,15 @@ do
             do
                 case $opt in
                 "Yes")
-                    screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-                    screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp"
-                    screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-                    screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp"
+                    screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessnaMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+                    screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b 2"
+                    screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyrMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+                    screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp  -b 2"
                     break
                     ;; 
                 "No")
-                   screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-                   screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+                   screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessnaMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
+                   screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyrMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
                         break
                         ;;
                 esac
