@@ -41,6 +41,7 @@ echo -e "$udp_port_list"
 ((udp=udp-110))
 
 sayac=0
+rm -r ./json
 mkdir json
 while [ $sayac -le 11 ]
 do
