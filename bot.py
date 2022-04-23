@@ -1,6 +1,6 @@
 import json
 from doctest import master
-from dronekit import LocationGlobalRelative, connect
+from dronekit import LocationGlobalRelative, connect, Command
 import time
 import random
 import argparse
@@ -8,6 +8,7 @@ import math
 import geopy.distance
 import colorama
 from colorama import Fore, Back, Style
+from pymavlink import mavutil
 
 colorama.init()
 
@@ -19,6 +20,8 @@ ap.add_argument("-b","--bottype",required=False,help="0 for Fighter UAV, 1 for K
 args = vars(ap.parse_args())
 
 print(Fore.LIGHTGREEN_EX, "Vehicle Port Number is:", Fore.LIGHTCYAN_EX , (args["port"]))
+
+sayac = 0
 
 #required to identify the vehicle type
 if int(args["port"]) == 14705 or int(args["port"]) == 14715:
@@ -81,6 +84,7 @@ if int(args["map"]) == 3:
 time.sleep(20)
 vehicle = connect ('127.0.0.1:'+args["port"], wait_ready=True)
 
+#takeoff mission
 def arm_and_takeoff(aTargetAltitude):
     print ("Basic pre-arm checks")
     while not vehicle.is_armable:
@@ -112,13 +116,12 @@ def arm_and_takeoff(aTargetAltitude):
 
 arm_and_takeoff(30)
 world ()
-
 qr_location = [ qr_1, qr_2, qr_3, qr_4 ]
 print("Takeoff Complete")
 
-sayac = 0
-# bot types
+# for real Fighter UAV bot
 if args["bottype"] is None:
+    # for Enemies
     if master == 0:
         while True:
             if sayac%20 == 0:
@@ -127,7 +130,7 @@ if args["bottype"] is None:
                 vehicle.simple_goto(a_location)
                 print (a_location)
             time.sleep (1)
-            sayac = sayac + 1
+            sayac += 1
             location ={
     "long" :vehicle.location.global_frame.lon,
     "lat" :vehicle.location.global_frame.lat,
@@ -137,8 +140,13 @@ if args["bottype"] is None:
             filePathNameWExt = ('./' + "json" + '/' + str(args["port"]) + '.json')
             with open(filePathNameWExt, "w") as outfile:
                 outfile.write(json_object)
+    
+    # for Master UAV
     if master == 1:
+        time.sleep(5)
         while True:
+            #write json data
+            try:
                     location ={
             "long" :vehicle.location.global_frame.lon,
             "lat" :vehicle.location.global_frame.lat,
@@ -148,15 +156,18 @@ if args["bottype"] is None:
                     filePathNameWExt = ('./' + "json" + '/' + str(args["port"]) + '.json')
                     with open(filePathNameWExt, "w") as outfile:
                         outfile.write(json_vehicle)
-                    if sayac%100 == 0:
-                        print (Fore.LIGHTRED_EX + "******  Calculating Enemy Distance   ******")
+                    
+                    # Replaces an enemy every 50 seconds
+                    if sayac%50 == 0:
+                        print (Fore.LIGHTYELLOW_EX + " ******  Calculating Enemy Distance   ******")
                         enemyPort = 0
                         counter = 1
                         localCoords = (vehicle.location.global_frame.lat, vehicle.location.global_frame.lon)
                         enemiesDistance = []
+                        #calculate and select enemy
                         while not counter%11 == 0:
-                            counter = counter + 1
-                            enemyPort = enemyPort + 10
+                            counter += 1
+                            enemyPort += 10
                             filePathNameWExt = ('./' + "json" + '/' + (str(int(args["port"])+int(enemyPort))) + '.json')
                             with open(filePathNameWExt, 'r') as openfile:
                                 enemy = json.load(openfile)
@@ -166,8 +177,9 @@ if args["bottype"] is None:
                             enemiesDistance.append(distance)
                         selectBest = min(enemiesDistance)
                         enemyTarget = (int(enemiesDistance.index(selectBest))+1)*10
-                        print(Fore.LIGHTGREEN_EX +"New Target Port Mumber:", int(args["port"])+int(enemyTarget))
+                        print(Fore.LIGHTYELLOW_EX ," New Target Port Mumber:", Fore.LIGHTBLUE_EX ,int(args["port"])+int(enemyTarget))
                         #print(enemiesDistance)
+                    #read json data
                     filePathNameWExt = ('./' + "json" + '/' + (str(int(args["port"])+int(enemyTarget))) + '.json')
                     with open(filePathNameWExt, 'r') as openfile:
                         enemy = json.load(openfile)
@@ -175,21 +187,70 @@ if args["bottype"] is None:
                     localCoords = (vehicle.location.global_frame.lat, vehicle.location.global_frame.lon)
                     enemyLongLatDist = geopy.distance.geodesic(localCoords, enemyCoords).m
                     distance = math.sqrt(enemyLongLatDist**2+(vehicle.location.global_relative_frame.alt-enemy["alt"])**2)               
-                    sayac = sayac + 1
                     print(Fore.WHITE , "-----------------------------------")
                     print(Fore.LIGHTGREEN_EX ,"Selected Enemy Port Mumber:", Fore.LIGHTCYAN_EX, int(args["port"])+int(enemyTarget))
                     print(Fore.LIGHTGREEN_EX ,"Distance to Enemy(m):", Fore.LIGHTCYAN_EX, distance)
-                    print(Fore.LIGHTGREEN_EX ,"Speed:", Fore.LIGHTCYAN_EX, (math.sqrt(vehicle.velocity[0]**2 + vehicle.velocity[1]**2 + vehicle.velocity[2]**2)))
-                    a_location = LocationGlobalRelative(enemy["lat"] ,enemy["long"] ,enemy["alt"])
-                    vehicle.simple_goto(a_location)
-                    print(Fore.LIGHTGREEN_EX , "Next WP:", Fore.LIGHTCYAN_EX,  enemy["lat"],enemy["long"],enemy["alt"])
+                    print(Fore.LIGHTGREEN_EX ,"Ground Speed:", Fore.LIGHTCYAN_EX, (math.sqrt(vehicle.velocity[0]**2 + vehicle.velocity[1]**2 + vehicle.velocity[2]**2)))
+                    #missionu sıfırlamak icin
+                    cmds = vehicle.commands
+                    cmds.clear()
+                    cmds.upload()
+                    if float(latmax) > float(enemy["lat"]) and float(latmin) < float(enemy["lat"]) and float(longmax) > float(enemy["long"]) and float(longmin) < float(enemy["long"]):
+                        #change speed
+                        if int(distance) > 30:
+                            groundspeed = 30
+                            throttle_setting = 100
+                            print(Fore.LIGHTGREEN_EX ,"Speed Setting:", Fore.LIGHTCYAN_EX, groundspeed)
+                        if int(distance) < 31 and int(distance) > 20:
+                            groundspeed = 25
+                            throttle_setting = 80
+                            print(Fore.LIGHTGREEN_EX ,"Speed Setting:", Fore.LIGHTCYAN_EX, groundspeed)  
+                        if int(distance) < 21:
+                            throttle_setting = distance*2
+                            groundspeed = (distance/2)
+                            print(Fore.LIGHTGREEN_EX ,"Speed Setting:", Fore.LIGHTCYAN_EX, groundspeed)
+                        print(Fore.LIGHTGREEN_EX , "Next WP:", Fore.LIGHTCYAN_EX,  enemy["lat"],enemy["long"],enemy["alt"])
+                        cmds.add( Command( 0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                            mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED, 0, 0, 1, groundspeed, throttle_setting, 0, 0, 0, 0) )
+                        # Create and add commands
+                        cmds.add(Command(0,0,0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                            mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 1, 1, 0,float(enemy["lat"]), float(enemy["long"]), float(enemy["alt"])))
+                        cmds.upload() # Send commands
+                        vehicle.mode = "AUTO"
+                        vehicle.commands.next=1                                                   
+                        sayac += 1
+                        #this is for fix some errors
+                        if int(distance) > 70:
+                            sayac = 50
+                            print(Fore.LIGHTRED_EX + " Enemy Distance is Too High, Calculating Other Enemies Distance")
+                        if int(enemy["alt"]) < 30 or int(enemy["alt"]) > 100:
+                            sayac = 50
+                            print(Fore.LIGHTRED_EX + " Enemy Altitude is Too Low or High, Calculating Other Enemies Distance")
+                    #this is for fix some errors
+                    else:
+                        print (Fore.LIGHTRED_EX, "Warning! Enemy is not in the competition area!")
+                        print ( " Target Enemy is Reselecting!")
+                        sayac = 50
+                    if float(latmax) < float(vehicle.location.global_frame.lat) or float(latmin) > float(vehicle.location.global_frame.lat) or float(longmax) < float(vehicle.location.global_frame.lon) or float(longmin) > float(vehicle.location.global_frame.lon):
+                        vehicle.mode    = "GUIDED"
+                        print (Fore.LIGHTRED_EX, "Warning! UAV is not in the competition area!")
+                        print ( " Going to the competition area for 10 seconds!")
+                        a_location = LocationGlobalRelative((latmin+latmax)/2, (longmin+longmax)/2, random.randint(30,100))
+                        vehicle.simple_goto(a_location)
+                        print(Fore.LIGHTGREEN_EX , "Next WP:", Fore.LIGHTCYAN_EX, a_location )
+                        time.sleep(10)
                     time.sleep (1)
-                    #print("Not found enemy. Change location...")
-                    #a_location = LocationGlobalRelative(random.uniform(latmin,latmax), random.uniform(longmin,longmax), random.randint(30,100))
-                    #vehicle.simple_goto(a_location)
-                    #print (a_location)
-                    #time.sleep(20) 
+            #herhangi bir hata olmasına karsı
+            except:
+                pass
 
+#print("Not found enemy. Change location...")
+#a_location = LocationGlobalRelative(random.uniform(latmin,latmax), random.uniform(longmin,longmax), random.randint(30,100))
+#vehicle.simple_goto(a_location)
+#print (a_location) 
+#time.sleep(20) 
+
+# for QR code bot
 if  int(args["bottype"]) == 1:
     while True:
         a_location = LocationGlobalRelative(latmin, longmin, 100)
@@ -202,7 +263,7 @@ if  int(args["bottype"]) == 1:
         print (qr_lat , qr_min)
         vehicle.simple_goto(location_2)
         time.sleep(40)
-
+# for random goto bot
 if int(args["bottype"]) == 2:
     while True:
         a_location = LocationGlobalRelative(random.uniform(latmin,latmax), random.uniform(longmin,longmax), random.randint(30,100))
