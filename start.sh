@@ -196,6 +196,7 @@ screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --
 screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType"
 fi
 
+#video ve gazeboyu başlatma
 screen -S server -d -m bash -c "rosrun web_video_server web_video_server"
 screen -S simulation -T -d -m bash -c "roslaunch ~/test-ucusu/fighter-sim/worlds/launcher.launch world:=$map-$mapType.world gui:=$gazeboGui"
 
