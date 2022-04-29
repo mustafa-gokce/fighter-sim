@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="square_qr">
+    <pose>0 0 1 0 0 0</pose>
+    <static>true</static>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <scale>6 6 0.001</scale>
+            <uri>model://square_qr/meshes/square_qr.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
