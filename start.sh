@@ -8,8 +8,6 @@ RED="\e[91m"
 YELLOW="\e[93m"
 #terminal settings dont touch
  
-
-
 #settings
 startUDP=14700 #enter the starting udp port
 realMap=false #true or false 
@@ -17,10 +15,8 @@ mapLoaction=0 # 0 = samsun, 1 = eskisehir, 2 = istanbul, 3 = mcmillan. If you se
 mapType=vehicles # empty - vehicle - vehicles - frozen
 botType=1 # 0 = disable, 1 = fighterUAV, 2 = QRbot , 3 = randomGoTo 
 gazeboGui=false #true or false # her iki durumda da motor daima etkin
+clear=disable #enable or disable çıkışta gereksiz logları silme
 #settings
-
-
-
 
 #lokasyona göre konumlar dont touch
 samsun_carsamba=("${GREEN}
@@ -202,6 +198,18 @@ fi
 
 screen -S server -d -m bash -c "rosrun web_video_server web_video_server"
 screen -S simulation -T -d -m bash -c "roslaunch ~/test-ucusu/fighter-sim/worlds/launcher.launch world:=$map-$mapType.world gui:=$gazeboGui"
+
+#log temizleme
+if [[ "$clear" = "enable" ]]
+then
+rm -r eeprom.bin
+rm -r mav.parm
+rm -r mav.tlog
+rm -r mav.tlog.raw
+rm -r logs
+rm -r json
+rm -r terrain
+fi
 
 #sistemi kapatma dont touch
 killall screen
