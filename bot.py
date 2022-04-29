@@ -1,5 +1,6 @@
 import json
 from doctest import master
+from re import A
 from dronekit import LocationGlobalRelative, connect, Command
 import time
 import random
@@ -19,7 +20,11 @@ ap.add_argument("-v","--vehicle",required=False,help="for vtol write somethink")
 ap.add_argument("-b","--bottype",required=False,help="0 for Fighter UAV, 1 for Kamikaze")
 args = vars(ap.parse_args())
 
+if int(args["bottype"]) == 0:
+    exit()
+
 print(Fore.LIGHTGREEN_EX, "Vehicle Port Number is:", Fore.LIGHTCYAN_EX , (args["port"]))
+
 
 sayac = 0
 
@@ -120,7 +125,7 @@ qr_location = [ qr_1, qr_2, qr_3, qr_4 ]
 print("Takeoff Complete")
 
 # for real Fighter UAV bot
-if args["bottype"] is None:
+if int(args["bottype"]) == 1:
     # for Enemies
     if master == 0:
         while True:
@@ -144,6 +149,7 @@ if args["bottype"] is None:
     # for Master UAV
     if master == 1:
         time.sleep(5)
+        vehicle.mode    = "AUTO"
         while True:
             #write json data
             try:
@@ -216,7 +222,6 @@ if args["bottype"] is None:
                         cmds.add(Command(0,0,0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
                             mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 1, 1, 0,float(enemy["lat"]), float(enemy["long"]), float(enemy["alt"])))
                         cmds.upload() # Send commands
-                        vehicle.mode = "AUTO"
                         vehicle.commands.next=1                                                   
                         sayac += 1
                         #this is for fix some errors
@@ -228,30 +233,36 @@ if args["bottype"] is None:
                             print(Fore.LIGHTRED_EX + " Enemy Altitude is Too Low or High, Calculating Other Enemies Distance")
                     #this is for fix some errors
                     else:
+                        cmds.clear()
+                        cmds.upload()    
                         print (Fore.LIGHTRED_EX, "Warning! Enemy is not in the competition area!")
                         print ( " Target Enemy is Reselecting!")
+                        cmds.add(Command(0,0,0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                            mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 1, 1, 0,(latmin+latmax)/2, (longmin+longmax)/2, random.randint(30,100)))
+                        cmds.upload() # Send commands
+                        vehicle.commands.next=1  
+                        print(Fore.LIGHTGREEN_EX , "Next WP:", Fore.LIGHTCYAN_EX, (latmin+latmax)/2, (longmin+longmax)/2)
+                        time.sleep(10)
                         sayac = 50
                     if float(latmax) < float(vehicle.location.global_frame.lat) or float(latmin) > float(vehicle.location.global_frame.lat) or float(longmax) < float(vehicle.location.global_frame.lon) or float(longmin) > float(vehicle.location.global_frame.lon):
-                        vehicle.mode    = "GUIDED"
+                        cmds.clear()
+                        cmds.upload()                        
                         print (Fore.LIGHTRED_EX, "Warning! UAV is not in the competition area!")
                         print ( " Going to the competition area for 10 seconds!")
-                        a_location = LocationGlobalRelative((latmin+latmax)/2, (longmin+longmax)/2, random.randint(30,100))
-                        vehicle.simple_goto(a_location)
-                        print(Fore.LIGHTGREEN_EX , "Next WP:", Fore.LIGHTCYAN_EX, a_location )
+                        cmds.add(Command(0,0,0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                            mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 1, 1, 0,(latmin+latmax)/2, (longmin+longmax)/2, random.randint(30,100)))
+                        cmds.upload() # Send commands
+                        vehicle.commands.next=1  
+                        print(Fore.LIGHTGREEN_EX , "Next WP:", Fore.LIGHTCYAN_EX, (latmin+latmax)/2, (longmin+longmax)/2)
                         time.sleep(10)
+                        sayac = 50
                     time.sleep (1)
             #herhangi bir hata olmasına karsı
             except:
                 pass
 
-#print("Not found enemy. Change location...")
-#a_location = LocationGlobalRelative(random.uniform(latmin,latmax), random.uniform(longmin,longmax), random.randint(30,100))
-#vehicle.simple_goto(a_location)
-#print (a_location) 
-#time.sleep(20) 
-
 # for QR code bot
-if  int(args["bottype"]) == 1:
+if  int(args["bottype"]) == 2:
     while True:
         a_location = LocationGlobalRelative(latmin, longmin, 100)
         vehicle.simple_goto(a_location)
@@ -263,9 +274,11 @@ if  int(args["bottype"]) == 1:
         print (qr_lat , qr_min)
         vehicle.simple_goto(location_2)
         time.sleep(40)
+
 # for random goto bot
-if int(args["bottype"]) == 2:
+if int(args["bottype"]) == 3:
     while True:
         a_location = LocationGlobalRelative(random.uniform(latmin,latmax), random.uniform(longmin,longmax), random.randint(30,100))
         vehicle.simple_goto(a_location)
         time.sleep(20)
+
