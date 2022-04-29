@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="istanbul_airport">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision_mcmillan">
+        <geometry>
+          <heightmap>
+            <uri>model://istanbul_airport/media/istanbul_airport.tif</uri>
+            <pos>2000 -1000 -785</pos>
+          </heightmap>
+        </geometry>
+      </collision>
+      <visual name="visual_mcmillan">
+        <geometry>
+          <heightmap>
+            <texture>
+              <box><size>1000 1000 0.5</size></box>
+              <diffuse>model://istanbul_airport/media/textures/istanbul_airport.png</diffuse>
+              <normal>file://media/materials/textures/flat_normal.png</normal>
+              <size>8193</size>
+            </texture>
+            <uri>model://istanbul_airport/media/istanbul_airport.tif</uri>
+            <pos>2000 -1000 -800</pos>
+          </heightmap>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
