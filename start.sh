@@ -12,12 +12,11 @@ YELLOW="\e[93m"
 
 #settings
 startUDP=14700 #enter the starting udp port
-realMap=true #true or false 
+realMap=false #true or false 
 mapLoaction=0 # 0 = samsun, 1 = eskisehir, 2 = istanbul, 3 = mcmillan. If you select fake world you cannot select mcmillan
 mapType=vehicles # empty - vehicle - vehicles - frozen
 botType=1 # 0 = disable, 1 = fighterUAV, 2 = QRbot , 3 = randomGoTo 
 gazeboGui=false #true or false # her iki durumda da motor daima etkin
-helper=disable #enable or disable  #shell başladığında udp portları ve kamera portlarının linkleri gösterilsin mi?
 #settings
 
 
@@ -35,8 +34,7 @@ Fighter UAV QR coordinates:${BLUE}
 41.27371117 36.54610957   test_ucusu_m
 41.27346260 36.54614445   mustafakemalataturk_m
 41.27303270 36.54732937   istikbal_goklerdedir_q
-41.27344964 36.54494403   teknofest_h${ENDCOLOR}
-")
+41.27344964 36.54494403   teknofest_h${ENDCOLOR}")
 
 hasan_polatkan=("${GREEN}
 Fighter UAV Competition coordinates:${BLUE}
@@ -49,8 +47,7 @@ Fighter UAV QR coordinates:${BLUE}
 39.82853660 30.49775910   test_ucusu_m
 39.82830170 30.49775910   mustafakemalataturk_m
 39.82786821 30.49895444   istikbal_goklerdedir_q
-39.82828815 30.49662495   teknofest_h${ENDCOLOR}
-")
+39.82828815 30.49662495   teknofest_h${ENDCOLOR}")
 
 istanbul_airport=("${GREEN}
 Fighter UAV Competition coordinates:${BLUE}
@@ -63,8 +60,7 @@ Fighter UAV QR coordinates:${BLUE}
 41.28410826 28.71609380  test_ucusu_m
 41.28386131 28.71612960  mustafakemalataturk_m
 41.28342268 28.71732269  istikbal_goklerdedir_q
-41.28384374 28.71493156  teknofest_h${ENDCOLOR}
-")
+41.28384374 28.71493156  teknofest_h${ENDCOLOR}")
 
 mcmillan_airport=("${GREEN}
 Fighter UAV Competition coordinates:${BLUE}
@@ -77,8 +73,7 @@ Fighter UAV QR coordinates:${BLUE}
 35.72285994 -120.77583165  test_ucusu_m
 35.72385209 -120.77488093  mustafakemalataturk_m
 35.72337693 -120.77278143  istikbal_goklerdedir_q
-35.72341750 -120.77420400  teknofest_h${ENDCOLOR}
-")
+35.72341750 -120.77420400  teknofest_h${ENDCOLOR}")
 
 #lokasyonlar icin iha otopilot ayarları dont touch
 if [[ "$mapLoaction" = 0 ]]
@@ -131,7 +126,7 @@ done
 ((udp=udp-120))
 
 #script yardımcısı dont touch
-if [[ "$helper" = "enable" ]]
+if [ "$1" == "-h" ]
 then
 udp_port_list=("${YELLOW}  _______  ______   _____  _______      _    _   _____  _    _   _____  _    _ 
  |__   __||  ____| / ____||__   __|    | |  | | / ____|| |  | | / ____|| |  | |
@@ -160,7 +155,6 @@ clear
 echo -e "$helpMap"
 read -p "Press enter to continue"
 fi
-
 
 c=-1
 #mapa göre start verme dont touch
