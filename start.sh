@@ -14,8 +14,9 @@ realMap=false # true // false
 mapLoaction=0 # 0 = samsun // 1 = eskisehir // 2 = istanbul // 3 = mcmillan # If you select fake world you cannot select mcmillan
 mapType=vehicles # empty - vehicle - vehicles - frozen
 #vehicle; best option for QR bot // vehicles; best option for Fighter UAV bot // frozen; best option for only image processing with randomGoTo bot
+botdiff=1 # 0 = easy // 1 = normal // 2 = hard // 3 = expert enemy bot difficulty
 botType=1 # 0 = disable // 1 = fighterUAV // 2 = QRbot // 3 = randomGoTo 
-gazeboGui=false # true // false # her iki durumda da motor daima etkin
+gazeboGui=true # true // false # her iki durumda da motor daima etkin
 clear=enable # enable // disable # çıkışta gereksiz logları silme
 #settings
 
@@ -159,43 +160,43 @@ c=-1
 if [[ "$mapType" = "vehicle" ]]
 then
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 fi
 
 if [[ "$mapType" = "vehicles" ]]
 then
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-gnome-terminal -- python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP
+gnome-terminal -- python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyrMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-gnome-terminal -- python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP
+gnome-terminal -- python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyr.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/quadplane.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -v 1"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff -v 1"
 fi
 
 if [[ "$mapType" = "frozen" ]]
 then
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/cessna.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 screen -S vehicle -d -m bash -c "sim_vehicle.py -v ArduPlane -f gazebo-zephyr --add-param-file ~/test-ucusu/fighter-sim/params/zephyrMaster.parm  -m --mav20 -I$((c=c+1)) --out=127.0.0.1:$((udp=udp+5)) --out=127.0.0.1:$((udp=udp+5)) -l $location,0,0"
-screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP"
+screen -S bot -d -m bash -c "python3 ~/test-ucusu/fighter-sim/bot.py -m $mac -p $udp -b $botType -s $startUDP -d $botdiff"
 fi
 
 #video ve gazeboyu başlatma
