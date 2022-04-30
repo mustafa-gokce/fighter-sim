@@ -14,7 +14,7 @@ realMap=false # true // false
 mapLoaction=0 # 0 = samsun // 1 = eskisehir // 2 = istanbul // 3 = mcmillan # If you select fake world you cannot select mcmillan
 mapType=vehicles # empty - vehicle - vehicles - frozen
 #vehicle; best option for QR bot // vehicles; best option for Fighter UAV bot // frozen; best option for only image processing with randomGoTo bot
-botdiff=1 # 0 = easy // 1 = normal // 2 = hard // 3 = expert enemy bot difficulty
+botdiff=1 # 0 = easy // 1 = normal // 2 = hard // 3 = expert #enemy bot difficulty
 botType=1 # 0 = disable // 1 = fighterUAV // 2 = QRbot // 3 = randomGoTo 
 gazeboGui=true # true // false # her iki durumda da motor daima etkin
 clear=enable # enable // disable # çıkışta gereksiz logları silme
