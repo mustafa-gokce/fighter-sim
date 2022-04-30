@@ -1,9 +1,7 @@
 from dronekit import LocationGlobalRelative, connect, Command
 from colorama import Fore
 from pymavlink import mavutil
-import time , random , argparse , math , geopy.distance , colorama , json
-
-colorama.init()
+import time , random , argparse , math , geopy.distance , json
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-m","--map",required=True,help="samsun 0, eskisehir 1, istanbul 2, mcmillian 3")
@@ -11,6 +9,7 @@ ap.add_argument("-p","--port",required=True,help="port adress")
 ap.add_argument("-v","--vehicle",required=False,help="for vtol write somethink")
 ap.add_argument("-b","--bottype",required=False,help="0 disable, 1 for Fighter UAV, 2 for Kamikaze , 3 for random go to")
 ap.add_argument("-s","--sport",required=True,help="starting port adress")
+ap.add_argument("-d","--difficulty",required=True,help="enemy bot difficulty")
 args = vars(ap.parse_args())
 
 #close the bot
@@ -26,6 +25,15 @@ if int(args["sport"])+5 == int(args["port"]) or int(args["sport"])+15 == int(arg
     master = 1
 else:
     master = 0
+
+if int(args["difficulty"]) == 0:
+    timer = 30
+if int(args["difficulty"]) == 1:
+    timer = 20
+if int(args["difficulty"]) == 2:
+    timer = 10
+if int(args["difficulty"]) == 3:
+    timer = 5
 
 if int(args["map"]) == 0:
     #samsun_airport
@@ -123,7 +131,7 @@ if int(args["bottype"]) == 1:
     # for Enemies
     if master == 0:
         while True:
-            if sayac%20 == 0:
+            if sayac%timer == 0:
                 print("Change Location...")
                 a_location = LocationGlobalRelative(random.uniform(latmin,latmax), random.uniform(longmin,longmax), random.randint(35,95))
                 vehicle.simple_goto(a_location)
@@ -280,18 +288,28 @@ if  int(args["bottype"]) == 2:
         a_location = LocationGlobalRelative(latmin, longmin, 100)
         vehicle.simple_goto(a_location)
         print("Change Location...")
-        time.sleep(20)
+        time.sleep(timer)
         qr_lat,qr_min=random.choice(qr_location)
         location_2 = LocationGlobalRelative (qr_lat,qr_min,30)
         print("Change Location...")
         print (qr_lat , qr_min)
         vehicle.simple_goto(location_2)
-        time.sleep(40)
+        time.sleep(timer*2)
 
 # for random goto bot
 if int(args["bottype"]) == 3:
     while True:
         a_location = LocationGlobalRelative(random.uniform(latmin,latmax), random.uniform(longmin,longmax), random.randint(35,95))
         vehicle.simple_goto(a_location)
-        time.sleep(20)
+        time.sleep(timer)
+        #if UAV is falls
+        if int(vehicle.location.global_relative_frame.alt) < 2:
+            print(Fore.LIGHTRED_EX, "Altitude Too Low. Trying Takeoff Again!!!")
+            vehicle.mode    = "FBWA"
+            time.sleep (5)
+            vehicle.armed   = False
+            vehicle.mode    = "TAKEOFF"
+            vehicle.armed   = True
+            time.sleep (15)
+            vehicle.mode    = "GUIDED"
 
