@@ -295,6 +295,16 @@ if  int(args["bottype"]) == 2:
         print (qr_lat , qr_min)
         vehicle.simple_goto(location_2)
         time.sleep(timer*2)
+        #if UAV is falls
+        if int(vehicle.location.global_relative_frame.alt) < 2:
+            print(Fore.LIGHTRED_EX, "Altitude Too Low. Trying Takeoff Again!!!")
+            vehicle.mode    = "FBWA"
+            time.sleep (5)
+            vehicle.armed   = False
+            vehicle.mode    = "TAKEOFF"
+            vehicle.armed   = True
+            time.sleep (15)
+            vehicle.mode    = "GUIDED"
 
 # for random goto bot
 if int(args["bottype"]) == 3:
