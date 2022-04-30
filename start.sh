@@ -206,9 +206,7 @@ screen -S simulation -T -d -m bash -c "roslaunch ~/test-ucusu/fighter-sim/worlds
 if [[ "$clear" = "enable" ]]
 then
 rm -r eeprom.bin
-rm -r mav.parm
-rm -r mav.tlog
-rm -r mav.tlog.raw
+rm -r mav.*
 rm -r logs
 rm -r json
 rm -r terrain
